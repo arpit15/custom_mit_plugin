@@ -1,0 +1,72 @@
+<scene version="2.1.0">
+
+<!-- Defaults, these can be set via the command line: -Darg=value -->
+
+	<default name="spp" value="4096"/>
+	<default name="resx" value="100"/>
+	<default name="resy" value="100"/>
+
+<!-- Camera and Rendering Parameters -->
+
+	<integrator type="path">
+		<integer name="max_depth" value="12"/>
+	</integrator>
+	<sensor type="perspective" name="elm4">
+		<string name="fov_axis" value="x"/>
+		<float name="fov" value="39.597752"/>
+		<float name="principal_point_offset_x" value="0.000000"/>
+		<float name="principal_point_offset_y" value="-0.000000"/>
+		<float name="near_clip" value="0.100000"/>
+		<float name="far_clip" value="1000.000000"/>
+		<transform name="to_world">
+			<rotate x="1" angle="180.00000500895632"/>
+			<rotate y="1" angle="5.008956130975331e-06"/>
+			<rotate z="1" angle="-89.999995674289"/>
+			<translate value="0.000000 0.000000 2.500000"/>
+		</transform>
+		<sampler type="independent" name="sampler">
+			<integer name="sample_count" value="$spp"/>
+		</sampler>
+		<film type="hdrfilm" name="film">
+			<integer name="width" value="$resx"/>
+			<integer name="height" value="$resy"/>
+		</film>
+	</sensor>
+
+<!-- Materials -->
+
+	<bsdf type="twosided" id="mat-Material.001" name="mat-Material.001">
+		<bsdf type="diffuse" name="bsdf">
+			<rgb value="0.767762 0.767762 0.767762" name="reflectance"/>
+		</bsdf>
+	</bsdf>
+
+<!-- Emitters -->
+	<emitter type="ies" name="elm3">
+		<string name="filename" value="rayfile_LCB_TTSD_20200817_IES.ies"/>
+		<rgb value="0.795775 0.000000 0.000000" name="intensity"/>
+		<transform name="to_world">
+			<matrix value="-0.000000 -0.000000 1.000000 -0.750000 0.000000 -1.000000 -0.000000 0.000000 1.000000 -0.000000 0.000000 0.073622 0.000000 0.000000 0.000000 1.000000"/>
+		</transform>
+	</emitter>
+
+	<!-- <emitter type="myspot" name="elm3">
+		<rgb value="0.795775 0.000000 0.000000" name="intensity"/>
+		<float name="cutoff_angle" value="22.500001"/>
+		<float name="beam_width" value="20.723722"/>
+		<transform name="to_world">
+			<matrix value="-0.000000 -0.000000 1.000000 -0.750000 0.000000 -1.000000 -0.000000 0.000000 1.000000 -0.000000 0.000000 0.073622 0.000000 0.000000 0.000000 1.000000"/>
+		</transform>
+	</emitter> -->
+
+<!-- Shapes -->
+
+	<shape type="ply" name="elm2">
+		<string name="filename" value="meshes/Plane.ply"/>
+		<boolean name="face_normals" value="true"/>
+		<ref id="mat-Material.001" name="bsdf"/>
+	</shape>
+
+<!-- Volumes -->
+
+</scene>
