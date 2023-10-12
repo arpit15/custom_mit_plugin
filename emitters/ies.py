@@ -52,10 +52,15 @@ class IES(mi.Emitter):
         return self.flags
 
     def direction_to_uv(self, local_dir):
-        return mi.Point2f(
-            self.m_uv_factor.x * (0.5 + 0.5 * (local_dir.x/ local_dir.z) ), 
-            self.m_uv_factor.y * (0.5 + 0.5 * (local_dir.y/ local_dir.z) )
-        )
+        local_dir = dr.normalize(local_dir)
+        # calculation theta and phi
+        theta = dr.acos(local_dir.z)
+        phi = dr.atan2(local_dir.y, local_dir.x)
+        # convert to [-1,1]
+        theta = theta * dr.rcp(dr.pi)
+        phi = phi * dr.rcp(2.0 * dr.pi)
+
+        return mi.Point2f(phi, theta)
     
     def sample_ray(self, time, wv_s, sp_s, dir_s, active):
         # sample direction
