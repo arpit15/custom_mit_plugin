@@ -27,22 +27,68 @@ def read_ies_data(fn):
 		print("Failed to load IES file using OSRAM method")
 	
 	try:
-		ies_data = read_ies_data_ies_lib(fn)
+		ies_data = read_ies_data_format1(fn)
 		return ies_data
 	except:
 		print("Failed to load IES file using IES library method")
 
 	return ies_data
 
-def read_ies_data_ies_lib(fn):
-	print("Not implemented yet")
-	return None
+# it seems that files from ies library has the same format
+# read IESNA91 format
+# read LM-63-2002 format
+def read_ies_data_format1(fn):
+	with open(fn, 'r') as f:
+		# get the ies format
+		line = f.readline()
+		format = line.split(":")[1]
+		print(f"IES format: {format}")
+		# if format != "IESNA91" or format != "LM-63-2002":
+		# 	print("IES format not supported")
+		# 	return None
+		# ignore till TILT
+		TILT_found = False
+		TILT_type = None
+		while not TILT_found:
+			line = f.readline()
+			if line.startswith("TILT"):
+				TILT_found = True
+				TILT_type = line.split("=")[1]
 
+		# ignore next 4 lines
+		if TILT_type == "INCLUDE":
+			for _ in range(4):
+				f.readline()
+
+		# <#lamps> <lumensperlamp> <candela multiplier> <#verts> <#horis>
+		# get number of vert angles
+		line = f.readline()
+		num_phis = int(line.split()[3])
+		num_thetas = int(line.split()[4])
+
+		# ignore the actual phi and theta vals
+		parse_data_from_line(f, num_phis)
+		parse_data_from_line(f, num_thetas)
+
+		ies_data = np.zeros((num_phis, num_thetas), np.float32)
+
+		# each line contains data for a single hori angle
+		for i in range(num_thetas):
+			ies_data[:,i] = np.array(parse_data_from_line(f, num_phis))
+
+	return ies_data
 
 def read_ies_data_osram(fn):
 	with open(fn, 'r') as f:
-		# ignore first 10 lines
-		for _ in range(10):
+		# get the ies format
+		line = f.readline()
+		format = line.split(":")[1]
+		print(f"IES format: {format}")
+		if format != "LM-63-2002":
+			print("IES format not supported")
+			return None
+		# ignore next 9 lines
+		for _ in range(9):
 			line = f.readline()
 
 		# get number of vert angles
